@@ -170,13 +170,20 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2, cluster=True):
     if cluster:
 
         # Clustering
-        left_clusts = fclusterdata(np.squeeze(np.hstack((x_l, Y_l)), axis=2), t=2, criterion='maxclust', metric=line_dist)
-        right_clusts = fclusterdata(np.squeeze(np.hstack((x_r, Y_r)), axis=2), t=2, criterion='maxclust', metric=line_dist)
-        left_idxs = (left_clusts == np.argmax(np.bincount(left_clusts)))
-        right_idxs = (right_clusts == np.argmax(np.bincount(right_clusts)))
+        try:
+            left_clusts = fclusterdata(np.squeeze(np.hstack((x_l, Y_l)), axis=2), t=2, criterion='maxclust', metric=line_dist)
+            right_clusts = fclusterdata(np.squeeze(np.hstack((x_r, Y_r)), axis=2), t=2, criterion='maxclust', metric=line_dist)
+            left_idxs = (left_clusts == np.argmax(np.bincount(left_clusts)))
+            right_idxs = (right_clusts == np.argmax(np.bincount(right_clusts)))
 
-        new_Y_l, new_Y_r, new_x_l, new_x_r = Y_l[left_idxs], Y_r[right_idxs], x_l[left_idxs], x_r[right_idxs]
-        new_Y_l, new_Y_r, new_x_l, new_x_r = np.reshape(new_Y_l, (-1, 1)), np.reshape(new_Y_r, (-1, 1)), np.reshape(new_x_l, (-1, 1)), np.reshape(new_x_r, (-1, 1))
+            new_Y_l, new_Y_r, new_x_l, new_x_r = Y_l[left_idxs], Y_r[right_idxs], x_l[left_idxs], x_r[right_idxs]
+            new_Y_l, new_Y_r, new_x_l, new_x_r = np.reshape(new_Y_l, (-1, 1)), np.reshape(new_Y_r, (-1, 1)), np.reshape(new_x_l, (-1, 1)), np.reshape(new_x_r, (-1, 1))
+        except:
+            print(x_r.shape, x_r)
+            print(Y_r.shape, Y_r)
+            print(np.hstack((x_r, Y_r)).shape, np.hstack((x_r, Y_r)))
+            return False
+
 
         # Linear regression
         try:
@@ -251,6 +258,9 @@ def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
     pts = draw_lines(line_img, lines)
     line_img = cv2.cvtColor(line_img, cv2.COLOR_RGB2GRAY)
 
+    if pts == False:
+        return img, pts
+
     # Get lines from masked image
     mask_img = np.zeros_like(img)
     mask_img[(img == 1) & (line_img == 1)] = 1
@@ -258,6 +268,7 @@ def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
                             maxLineGap=max_line_gap)
     new_line_img= np.zeros((mask_img.shape[0], img.shape[1], 3), dtype=np.uint8)
     new_pts = draw_lines(new_line_img, new_lines, cluster=False)
+
 
     return new_line_img, new_pts
 
