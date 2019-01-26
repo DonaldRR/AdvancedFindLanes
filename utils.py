@@ -30,6 +30,11 @@ def measure_curvature_pixels(ploty, left_fit, right_fit):
     return left_curverad, right_curverad
 
 def fit_polynomial(binary_warped):
+
+    # Define conversions in x and y from pixels space to meters
+    ym_per_pix = 30 / 720  # meters per pixel in y dimension
+    xm_per_pix = 3.7 / 700  # meters per pixel in x dimension
+
     # Find our lane pixels first
     x_size, y_size = binary_warped.shape[1], binary_warped.shape[0]
     nonzero = binary_warped.nonzero()
@@ -44,9 +49,14 @@ def fit_polynomial(binary_warped):
     ### TO-DO: Fit a second order polynomial to each using `np.polyfit` ###
     left_fit = np.polyfit(lefty, leftx, 2)
     right_fit = np.polyfit(righty, rightx, 2)
+    left_fit_m = np.polyfit(lefty * ym_per_pix, leftx * xm_per_pix, 2)
+    right_fit_m = np.polyfit(righty * ym_per_pix, rightx * xm_per_pix, 2)
+    dir = 1
+    if len(leftx) > len(rightx):
+        dir = 0
 
     # Generate x and y values for plotting
-    ploty = np.linspace(0, binary_warped.shape[0]-1, binary_warped.shape[0] )
+    ploty = np.linspace(0, binary_warped.shape[0]-1, binary_warped.shape[0])
     try:
         left_fitx = left_fit[0]*ploty**2 + left_fit[1]*ploty + left_fit[2]
         right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
@@ -71,7 +81,7 @@ def fit_polynomial(binary_warped):
     cv2.polylines(output_img, np.int32([np.hstack((left_fitx, ploty))]), False, (0, 255, 255), 3)
     cv2.polylines(output_img, np.int32([np.hstack((right_fitx, ploty))]), False, (0, 255, 255), 3)
 
-    return output_img, ploty, left_fit, right_fit
+    return output_img, np.int32(ploty * ym_per_pix), left_fit_m, right_fit_m, dir
 
 def fit_line(pt1, pt2):
 
@@ -190,7 +200,7 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2, cluster=True):
             new_clf_l = LinearRegression().fit(new_Y_l, new_x_l)
             new_x1_l = int(new_clf_l.predict(y1))
             new_x2_l = int(new_clf_l.predict(y2))
-            cv2.line(img, (new_x1_l, y1), (new_x2_l, y2), (255, 255, 255), 40)
+            cv2.line(img, (new_x1_l, y1), (new_x2_l, y2), (255, 255, 255), 30)
         except:
             n_lostLines += 1
 
@@ -198,7 +208,7 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2, cluster=True):
             new_clf_r = LinearRegression().fit(new_Y_r, new_x_r)
             new_x1_r = int(new_clf_r.predict(y1))
             new_x2_r = int(new_clf_r.predict(y2))
-            cv2.line(img, (new_x1_r, y1), (new_x2_r, y2), (255, 255, 255), 40)
+            cv2.line(img, (new_x1_r, y1), (new_x2_r, y2), (255, 255, 255), 30)
         except:
             n_lostLines += 1
 
@@ -213,7 +223,7 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2, cluster=True):
             clf_l = LinearRegression().fit(Y_l, x_l)
             x1_l = int(clf_l.predict(y1))
             x2_l = int(clf_l.predict(y2))
-            cv2.line(img, (x1_l, y1), (x2_l, y2), (255, 255, 255), 40)
+            cv2.line(img, (x1_l, y1), (x2_l, y2), (255, 255, 255), 30)
         except:
             n_lostLines += 1
 
@@ -221,7 +231,7 @@ def draw_lines(img, lines, color=[255, 0, 0], thickness=2, cluster=True):
             clf_r = LinearRegression().fit(Y_r, x_r)
             x1_r = int(clf_r.predict(y1))
             x2_r = int(clf_r.predict(y2))
-            cv2.line(img, (x1_r, y1), (x2_r, y2), (255, 255, 255), 40)
+            cv2.line(img, (x1_r, y1), (x2_r, y2), (255, 255, 255), 30)
         except:
             n_lostLines += 1
 
@@ -255,7 +265,9 @@ def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
     #     lines = cv2.HoughLinesP(img, rho, theta, threshold, np.array([]), minLineLength=min_line_len,
     #                             maxLineGap=max_line_gap)
     line_img= np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
-    pts = draw_lines(line_img, lines)
+    pts = draw_lines(line_img, lines, cluster=False)
+
+    return line_img, pts
     line_img = cv2.cvtColor(line_img, cv2.COLOR_RGB2GRAY)
 
     if pts == False:
