@@ -19,10 +19,29 @@ In the following I will illustrate how I achieve these goals.
 
 First, I need to find cross points in the image, I called `image points` which is in 2D space. And I define real chessboard corners in real world as `object points`. Given `object points` pattern, I look for the same pattern in chessboard images and find all the `image points`, then those points are input to function `cv2.calibrateCamera()` to find the camera calibration matrix and also the distortion coefficients. Here is the origin chessboard image:
 
+![alt text][origin_chessboard]
+
 Then I find all corners (image points) as shown by color dots:
 
-These points of all chessboard images help me to undistort road images. Undistorted image:
+![alt text][draw_chessboard]
 
+These points of all chessboard images help me to undistort images. Undistorted chessboard and road image:
+
+![alt text][undistort_chessboard]
+
+
+
+
+### Color Thresholding and Gradients Thresholding
+
+Thresholding tricks can extract the lane lines information. Here I depoly the color thresholding and gradients thresholding techniques along with other little tricks.
+
+
+
+
+[origin_chessboard]:./write_up_images/origin_chessboard.png "Original Chessboard"
+[draw_chessboard]:./write_up_images/draw_chessboard.png "Draw Chessboard"
+[undistort_chessboard]:./write_up_images/undistorted_chessboard.png "Undistort Chessboard"
 
 
 ### 
@@ -35,7 +54,6 @@ I start by preparing "object points", which will be the (x, y, z) coordinates of
 
 I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
 
-![alt text][image1]
 
 ### Pipeline (single images)
 
