@@ -58,6 +58,32 @@ Gradient describes the extent of color changes in the image. It is a good metric
 
 ![alt text][dir_gradient]
 
+#### Combination
+
+With thresholded images above, I combine those images to better distinguish lane lines :
+
+![alt text][combo]
+
+### Region Masking
+
+Additionally, the lane area ahead car is where we focus. I use region masking: 
+
+![alt text][region_mask]
+
+The green bouding box outlines the region of interest.
+
+### Lane Area Finding
+
+Given masked image above, pixels of lane lines are approximately selected. Here I use Hough Algorithm to detect lines and then choose pixels of detected lines to approximate the lane lines with linear regression. Fitted lines for lane lines are shown with bold lines:
+
+![alt text][hough_line]
+
+As I have approximated lane lines, it's apparent where lane area is (within green lines) :
+
+![alt text][lane_area]
+
+
+
 
 
 
@@ -71,6 +97,10 @@ Gradient describes the extent of color changes in the image. It is a good metric
 [x_gradient]:./write_up_images/sobelx_test1.jpg "X Gradient"
 [y_gradient]:./write_up_images/sobely_test1.jpg "Y Gradient"
 [dir_gradient]:./write_up_images/dir_test1.jpg "Direction Gradient"
+[combo]:./write_up_images/combo_test1.jpg "Combination"
+[region_mask]:/write_up_images/region_mask_test1.jpg "Region Masking"
+[hough_line]:/write_up_images/hough_mask_test1.jpg "Hough Line"
+[lane_area]:/write_up_images/lane_area_test1.jpg "Lane Area"
 
 ### 
 
