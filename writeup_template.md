@@ -29,12 +29,60 @@ These points of all chessboard images help me to undistort images. Undistorted c
 
 ![alt text][undistort_chessboard]
 
-
+![alt text][undistort road]
 
 
 ### Color Thresholding and Gradients Thresholding
 
 Thresholding tricks can extract the lane lines information. Here I depoly the color thresholding and gradients thresholding techniques along with other little tricks.
+
+#### Color Processing
+
+Color gives us a priori knowledge of what lanes look like. Lanes are usually bright yellow and bright white, in other words, those color is high-saturation. It is a good way to extract lanes lines by thresholding images' saturation value. Instead of using RGB color space, we use HLS which has one degree to measure saturation. Here is saturation-thresholded image:
+
+![alt text][color_thresh]
+
+Before going further to gradient thresholding which aims at outlining edges of images, I try to make those edges more prominent with color tricks. In some situation, the road is bright and differences (gradients) between lanes lines and road area becomes indistinguishable. My thought is enlarge this difference by enhancing the lane lines color. As I know where the lane lines are situated from threshold image above, I use it as a mask to select the area to be enhances (The enhancement method is increasing lightness and saturation). Enhanced image is shown below:
+
+![alt text][color_enhance]
+
+#### Gradient Thresholding
+
+Gradient describes the extent of color changes in the image. It is a good metric for detecting edges. Here I use Four gradient thresholding techniques: X-axis gradient thresholding, Y-axis gradient thresholding, Overall gradient thresholding and Direction-gradient thresholding. Thresholded images are displayed in the order: 
+
+![alt text][x_gradient]
+
+![alt text][y_gradient]
+
+![alt text][mag_gradient]
+
+![alt text][dir_gradient]
+
+#### Combination
+
+With thresholded images above, I combine those images to better distinguish lane lines :
+
+![alt text][combo]
+
+### Region Masking
+
+Additionally, the lane area ahead car is where we focus. I use region masking: 
+
+![alt text][region_mask]
+
+The green bouding box outlines the region of interest.
+
+### Lane Area Finding
+
+Given masked image above, pixels of lane lines are approximately selected. Here I use Hough Algorithm to detect lines and then choose pixels of detected lines to approximate the lane lines with linear regression. Fitted lines for lane lines are shown with bold lines:
+
+![alt text][hough_line]
+
+As I have approximated lane lines, it's apparent where lane area is (within green lines) :
+
+![alt text][lane_area]
+
+
 
 
 
@@ -42,7 +90,17 @@ Thresholding tricks can extract the lane lines information. Here I depoly the co
 [origin_chessboard]:./write_up_images/origin_chessboard.png "Original Chessboard"
 [draw_chessboard]:./write_up_images/draw_chessboard.png "Draw Chessboard"
 [undistort_chessboard]:./write_up_images/undistorted_chessboard.png "Undistort Chessboard"
-
+[undistort road]:./write_up_images/undistort_test1.jpg "Undistort Road"
+[color_thresh]:./write_up_images/color_thresh_test1.jpg "Color Threshold"
+[color_enhance]:./write_up_images/color_enhance_test1.jpg "Color Enhance"
+[mag_gradient]:./write_up_images/mag_test1.jpg "Magnitute Gradient"
+[x_gradient]:./write_up_images/sobelx_test1.jpg "X Gradient"
+[y_gradient]:./write_up_images/sobely_test1.jpg "Y Gradient"
+[dir_gradient]:./write_up_images/dir_test1.jpg "Direction Gradient"
+[combo]:./write_up_images/combo_test1.jpg "Combination"
+[region_mask]:/write_up_images/region_mask_test1.jpg "Region Masking"
+[hough_line]:/write_up_images/hough_mask_test1.jpg "Hough Line"
+[lane_area]:/write_up_images/lane_area_test1.jpg "Lane Area"
 
 ### 
 
