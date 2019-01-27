@@ -1,9 +1,5 @@
 ## Writeup Template
 
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
----
-
 **Advanced Lane Finding Project**
 
 The goals / steps of this project are the following:
@@ -17,29 +13,38 @@ The goals / steps of this project are the following:
 * Warp the detected lane boundaries back onto the original image.
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
-[//]: # (Image References)
+In the following I will illustrate how I achieve these goals.
 
-[image1]: ./examples/undistort_output.png "Undistorted"
-[image2]: ./test_images/test1.jpg "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
+### Camera Calibration Matrix and Distortion Coefficients from chessboard images.
 
-## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
+First, I need to find cross points in the image, I called `image points` which is in 2D space. And I define real chessboard corners in real world as `object points`. Given `object points` pattern, I look for the same pattern in chessboard images and find all the `image points`, then those points are input to function `cv2.calibrateCamera()` to find the camera calibration matrix and also the distortion coefficients. Here is the origin chessboard image:
 
-### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+![alt text][origin_chessboard]
 
----
+Then I find all corners (image points) as shown by color dots:
 
-### Writeup / README
+![alt text][draw_chessboard]
 
-#### 1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
+These points of all chessboard images help me to undistort images. Undistorted chessboard and road image:
 
-You're reading it!
+![alt text][undistort_chessboard]
 
-### Camera Calibration
+
+
+
+### Color Thresholding and Gradients Thresholding
+
+Thresholding tricks can extract the lane lines information. Here I depoly the color thresholding and gradients thresholding techniques along with other little tricks.
+
+
+
+
+[origin_chessboard]:./write_up_images/origin_chessboard.png "Original Chessboard"
+[draw_chessboard]:./write_up_images/draw_chessboard.png "Draw Chessboard"
+[undistort_chessboard]:./write_up_images/undistorted_chessboard.png "Undistort Chessboard"
+
+
+### 
 
 #### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
 
@@ -49,7 +54,6 @@ I start by preparing "object points", which will be the (x, y, z) coordinates of
 
 I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
 
-![alt text][image1]
 
 ### Pipeline (single images)
 
