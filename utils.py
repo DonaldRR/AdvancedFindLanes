@@ -267,7 +267,7 @@ def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
     line_img= np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
     pts = draw_lines(line_img, lines, cluster=False)
 
-    return line_img, pts
+    # return line_img, pts
     line_img = cv2.cvtColor(line_img, cv2.COLOR_RGB2GRAY)
 
     if pts == False:
@@ -275,8 +275,8 @@ def hough_lines(img, rho, theta, threshold, min_line_len, max_line_gap):
 
     # Get lines from masked image
     mask_img = np.zeros_like(img)
-    mask_img[(img == 1) & (line_img == 1)] = 1
-    new_lines = cv2.HoughLinesP(img, rho, theta, threshold, np.array([]), minLineLength=min_line_len,
+    mask_img[(img == 1) & ((line_img == 1) | (line_img == 255))] = 255
+    new_lines = cv2.HoughLinesP(mask_img, rho, theta, threshold, np.array([]), minLineLength=min_line_len,
                             maxLineGap=max_line_gap)
     new_line_img= np.zeros((mask_img.shape[0], img.shape[1], 3), dtype=np.uint8)
     new_pts = draw_lines(new_line_img, new_lines, cluster=False)
