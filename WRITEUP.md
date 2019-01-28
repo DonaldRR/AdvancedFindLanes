@@ -104,6 +104,8 @@ Remember the masking step along with Hough Lines Detection Algorithm, there are 
 
 In the previous step, I have fitted the polunomials and have polynomial coefficients now. And thus I can calculate the curvature based on that. Polynomials are not perfectly parallel. After curvature of left and right lane lines been calculated, I give the curvature whose lane is more solid (left lane) a bigger weight and the other less to calculate the overall curvature. 
 
+**NOTE: The radius of curvature should be VERY large (theorectically positive infinity) in frames where the car is driving in a straight lane road. So if the radius of curvature is so large, please note that whether the car is driving in a cruve lane road or not.**
+
 ```python
 img:test1.jpg 's curvature:1562.27 m
 ```
