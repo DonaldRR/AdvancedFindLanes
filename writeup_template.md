@@ -78,12 +78,41 @@ Given masked image above, pixels of lane lines are approximately selected. Here 
 
 ![alt text][hough_line]
 
+Those lines are drawn so bold that they cover the possible lane lines completely. Then it is used as a mask to filter out noise outside the bold lines effectively.
+
 As I have approximated lane lines, it's apparent where lane area is (within green lines) :
 
 ![alt text][lane_area]
 
+#### Center of car
 
+As bottom 2 corners of lane area define where the car is, the bias bettween mid point of those 2 points and mid point of image multiplying by a factor gives the bias of car to the center of road.
 
+### Perspective Transform
+
+In the perspective transforming step, source points of images are essential to know as they define a rectangular area in real world. Luckily, lane lines are parallel in real world so the lane area obtained above is approximately a retangular area in real world. I use points of corners of lane area as source points and arbitray other 4 points defining a retangle area in image as destined points. Here is the warped image:
+
+![alt text][warp_img]
+
+### Polynomial Fitting
+
+Remember the masking step along with Hough Lines Detection Algorithm, there are not much noise except two lane lines in the image. For the sake of simplicity, we can approximate polynomial just based on pixels on the left or right to fit the lane lines respectively. But to be more robust, I use convolution technique to find the lane lines. The convolution technique is that, given a convoltion matrix -- a 2D matrix, it slides horizontally and convolve with the sliding area. The higher value the sliding area has, the more possible it contains a lane line. After convolution and fitting process, here is the output:
+
+![alt text][poly_warp]
+
+### Curvature Calculation
+
+In the previous step, I have fitted the polunomials and have polynomial coefficients now. And thus I can calculate the curvature based on that. Polynomials are not perfectly parallel. After curvature of left and right lane lines been calculated, I give the curvature whose lane is more solid (left lane) a bigger weight and the other less to calculate the overall curvature. 
+
+```python
+img:test1.jpg 's curvature:1562.27 m
+```
+
+### Result
+
+![alt text][final_img]
+
+This image gives the result of processed image. The video is here.
 
 
 
@@ -101,6 +130,9 @@ As I have approximated lane lines, it's apparent where lane area is (within gree
 [region_mask]:/write_up_images/region_mask_test1.jpg "Region Masking"
 [hough_line]:/write_up_images/hough_mask_test1.jpg "Hough Line"
 [lane_area]:/write_up_images/lane_area_test1.jpg "Lane Area"
+[warp_img]:/write_up_images/warp_test1.jpg "Warp Image"
+[poly_warp]:./write_up_images/poly_warp_img_test1.jpg "Poly Warp Image"
+[final_img]:./write_up_images/final_test1.jpg "Final Image"
 
 ### 
 
